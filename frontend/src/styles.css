@@ -1,0 +1,649 @@
+/* アプリ全体で共有する色・フォント・ブラウザー標準スタイルです。 */
+:root {
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: #17211b;
+  background: #f3f1e9;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --ink: #17211b;
+  --muted: #657269;
+  --line: #d7dbd1;
+  --surface: rgba(255, 255, 252, 0.88);
+  --accent: #ff6b35;
+  --accent-dark: #d94918;
+  --green: #225c42;
+  --green-soft: #dcebdd;
+  --yellow-soft: #fff0c9;
+  --blue-soft: #dcebf4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 82% 9%, rgba(255, 190, 89, 0.2), transparent 28rem),
+    linear-gradient(180deg, #f7f6f0 0%, #edece5 100%);
+}
+
+/* ボタンやフォーム部品の共通操作スタイルです。 */
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+select {
+  cursor: pointer;
+}
+
+button:disabled,
+select:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(255, 107, 53, 0.28);
+  outline-offset: 2px;
+}
+
+.app-shell {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+/* 上部ナビゲーションとReactバージョン表示です。 */
+.site-header {
+  min-height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid rgba(23, 33, 27, 0.12);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: var(--ink);
+  border-radius: 13px;
+  font-weight: 900;
+}
+
+.brand strong,
+.brand small {
+  display: block;
+}
+
+.brand strong {
+  letter-spacing: -0.02em;
+}
+
+.brand small {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.version-pill,
+.manual-state {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.62);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.version-pill {
+  padding: 9px 13px;
+}
+
+/* React 18版であることを伝えるヒーローと集計カードです。 */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  align-items: end;
+  gap: 72px;
+  padding: 76px 0 54px;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--accent-dark);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  max-width: 760px;
+  margin-bottom: 24px;
+  font-size: clamp(3rem, 7vw, 6.6rem);
+  line-height: 0.96;
+  letter-spacing: -0.065em;
+}
+
+h1 span {
+  display: block;
+  color: var(--green);
+}
+
+.hero-description {
+  max-width: 650px;
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 1.08rem;
+  line-height: 1.8;
+}
+
+.stats-card {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0;
+  padding: 24px;
+  border: 1px solid rgba(23, 33, 27, 0.1);
+  border-radius: 24px;
+  background: var(--ink);
+  color: white;
+  box-shadow: 0 24px 70px rgba(29, 47, 37, 0.18);
+}
+
+.stats-card div {
+  text-align: center;
+}
+
+.stats-card div + div {
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.stats-card dt {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.72rem;
+}
+
+.stats-card dd {
+  margin: 6px 0 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+
+.panel {
+  border: 1px solid rgba(23, 33, 27, 0.11);
+  border-radius: 26px;
+  background: var(--surface);
+  box-shadow: 0 22px 65px rgba(36, 48, 40, 0.07);
+  backdrop-filter: blur(16px);
+}
+
+/* Issue追加フォームです。 */
+.compose-panel {
+  padding: 30px;
+}
+
+.section-heading,
+.board-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.section-heading h2,
+.board-toolbar h2 {
+  margin-bottom: 0;
+  font-size: 1.8rem;
+  letter-spacing: -0.04em;
+}
+
+.manual-state {
+  padding: 7px 11px;
+}
+
+.compose-panel form {
+  margin-top: 24px;
+}
+
+.compose-panel label {
+  display: inline-block;
+  margin-bottom: 9px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+.form-row input,
+.search-field input {
+  width: 100%;
+  border: 1px solid #cfd5ca;
+  background: #fffffc;
+  color: var(--ink);
+}
+
+.form-row input {
+  min-height: 54px;
+  padding: 0 17px;
+  border-radius: 14px;
+}
+
+.primary-button {
+  min-width: 154px;
+  min-height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--accent);
+  color: #24150f;
+  font-weight: 900;
+  box-shadow: 0 10px 30px rgba(255, 107, 53, 0.22);
+}
+
+.primary-button:not(:disabled):hover {
+  background: #ff7b4b;
+  transform: translateY(-1px);
+}
+
+.spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid rgba(36, 21, 15, 0.25);
+  border-top-color: #24150f;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+.form-hint {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+code {
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: #e8e8df;
+}
+
+.inline-error,
+.board-error {
+  color: #8d281b;
+  background: #fff0eb;
+  border: 1px solid #f1c8bc;
+}
+
+.inline-error {
+  margin: 14px 0 0;
+  padding: 11px 13px;
+  border-radius: 10px;
+  font-size: 0.86rem;
+}
+
+.board-section {
+  padding: 68px 0 80px;
+}
+
+/* 検索、失敗設定、Issue一覧を含むボード部分です。 */
+.search-field {
+  width: min(100%, 320px);
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: #fffffc;
+  color: var(--muted);
+}
+
+.search-field input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+}
+
+.experiment-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 24px 0;
+  padding: 12px 15px;
+  border: 1px dashed #bbc3b8;
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.experiment-bar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.board-error {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+}
+
+.board-error button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-decoration: underline;
+}
+
+.issue-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* Issue 1件分のカード、ステータス、投票ボタンです。 */
+.issue-card {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  padding: 21px;
+  border: 1px solid rgba(23, 33, 27, 0.1);
+  border-radius: 20px;
+  background: rgba(255, 255, 252, 0.92);
+  box-shadow: 0 15px 40px rgba(36, 48, 40, 0.06);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.issue-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 48px rgba(36, 48, 40, 0.1);
+}
+
+.issue-card-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status-badge {
+  padding: 6px 9px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.status-todo {
+  color: #745513;
+  background: var(--yellow-soft);
+}
+
+.status-in-progress {
+  color: #24536e;
+  background: var(--blue-soft);
+}
+
+.status-done {
+  color: #285a3e;
+  background: var(--green-soft);
+}
+
+.issue-number {
+  color: #90998f;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.issue-card h3 {
+  margin: 25px 0 20px;
+  font-size: 1.14rem;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+
+.issue-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.meta-divider {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #aeb6ad;
+}
+
+.issue-meta select {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: inherit;
+  font-weight: 700;
+}
+
+.vote-button {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 19px;
+  border: 1px solid #ccd2c9;
+  border-radius: 11px;
+  background: #f8f8f3;
+  color: var(--green);
+  font-weight: 900;
+}
+
+.vote-button:not(:disabled):hover {
+  border-color: var(--green);
+  background: #eff5ee;
+}
+
+.state-card {
+  padding: 36px;
+  border: 1px dashed #bdc5ba;
+  border-radius: 18px;
+  text-align: center;
+  background: rgba(255, 255, 252, 0.55);
+}
+
+.state-card p {
+  margin: 8px 0 18px;
+  color: var(--muted);
+}
+
+.state-card button {
+  padding: 9px 13px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: white;
+}
+
+/* API応答待ちに表示するスケルトンUIです。 */
+.skeleton-card {
+  gap: 22px;
+}
+
+.skeleton {
+  display: block;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #e7e8e1, #f4f4ee, #e7e8e1);
+  background-size: 220% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+.skeleton-short {
+  width: 72px;
+  height: 24px;
+}
+
+.skeleton-title {
+  width: 88%;
+  height: 25px;
+}
+
+.skeleton-line {
+  width: 100%;
+  height: 40px;
+  margin-top: auto;
+}
+
+footer {
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-top: 1px solid rgba(23, 33, 27, 0.12);
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+/* 見た目には隠しつつ、スクリーンリーダーには伝えるテキストです。 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -220% 0;
+  }
+}
+
+/* タブレット幅ではIssueカードを2列にします。 */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .stats-card {
+    max-width: 420px;
+  }
+
+  .issue-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* スマートフォン幅では主要レイアウトを1列にします。 */
+@media (max-width: 640px) {
+  .app-shell {
+    width: min(100% - 24px, 1180px);
+  }
+
+  .site-header,
+  .section-heading,
+  .board-toolbar,
+  .experiment-bar,
+  footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .site-header {
+    padding: 20px 0;
+  }
+
+  .hero {
+    padding-top: 48px;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 15vw, 4.8rem);
+  }
+
+  .form-row,
+  .issue-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .primary-button {
+    width: 100%;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+
+  footer {
+    padding: 22px 0;
+  }
+}
+
+/* OSで動きを減らす設定が有効なら、アニメーションを最小化します。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

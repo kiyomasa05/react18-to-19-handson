@@ -1,0 +1,26 @@
+{
+  "name": "react18-to-19-handson",
+  "version": "0.1.0",
+  "private": true,
+  "description": "React 18からReact 19.2への移行を検証するIssue管理アプリ",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently --names api,web --prefix-colors magenta,cyan \"npm run dev --workspace backend\" \"npm run dev --workspace frontend\"",
+    "dev:api": "npm run dev --workspace backend",
+    "dev:web": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace backend && npm run build --workspace frontend",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "zenn": "zenn preview"
+  },
+  "devDependencies": {
+    "concurrently": "10.0.4",
+    "zenn-cli": "0.5.2"
+  },
+  "engines": {
+    "node": ">=20.10.0"
+  }
+}
+
