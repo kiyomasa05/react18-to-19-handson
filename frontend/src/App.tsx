@@ -79,21 +79,28 @@ export default function App() {
   async function handleCreateIssue(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const title = draftTitle.trim()
+
+    // 空のタイトルと、送信中の二重送信はここで止めます。
     if (!title || isSubmitting) return
 
+    // 送信開始前: pending状態に切り替え、前回のエラーを消します。
     setIsSubmitting(true)
     setSubmitError(null)
 
     try {
       const createdIssue = await createIssue(title)
+
+      // 送信成功: APIが返したIssueを追加し、入力欄と検索条件をリセットします。
       setIssues((currentIssues) => [createdIssue, ...currentIssues])
       setDraftTitle('')
       if (titleSearchQuery) setTitleSearchQuery('')
     } catch (error) {
+      // 送信失敗: 画面へ表示するエラーメッセージをstateへ保存します。
       setSubmitError(
         error instanceof Error ? error.message : 'Issueの追加に失敗しました',
       )
     } finally {
+      // 送信終了: 成功・失敗のどちらでもpending状態を解除します。
       setIsSubmitting(false)
     }
   }
