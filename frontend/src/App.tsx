@@ -16,7 +16,7 @@ import type { Issue, IssueStatus } from './types/issue'
 export default function App() {
   // 一覧表示と検索・再読み込みに使うstateです。
   const [issues, setIssues] = useState<Issue[]>([])
-  const [query, setQuery] = useState('')
+  const [titleSearchQuery, setTitleSearchQuery] = useState('')
   const [reloadCount, setReloadCount] = useState(0)
 
   // Issue一覧の取得状況を手動で管理します。
@@ -48,7 +48,7 @@ export default function App() {
       setLoadError(null)
 
       try {
-        const nextIssues = await fetchIssues(query)
+        const nextIssues = await fetchIssues(titleSearchQuery)
         if (!ignore) setIssues(nextIssues)
       } catch (error) {
         if (!ignore) {
@@ -66,7 +66,7 @@ export default function App() {
     return () => {
       ignore = true
     }
-  }, [query, reloadCount])
+  }, [titleSearchQuery, reloadCount])
 
   // 表示中のIssueから、ヘッダーに表示する集計値を計算します。
   const stats = useMemo(() => {
@@ -88,7 +88,7 @@ export default function App() {
       const createdIssue = await createIssue(title)
       setIssues((currentIssues) => [createdIssue, ...currentIssues])
       setDraftTitle('')
-      if (query) setQuery('')
+      if (titleSearchQuery) setTitleSearchQuery('')
     } catch (error) {
       setSubmitError(
         error instanceof Error ? error.message : 'Issueの追加に失敗しました',
@@ -209,8 +209,8 @@ export default function App() {
               <span aria-hidden="true">⌕</span>
               <input
                 type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
+                value={titleSearchQuery}
+                onChange={(event) => setTitleSearchQuery(event.target.value)}
                 placeholder="タイトルを検索"
               />
             </label>

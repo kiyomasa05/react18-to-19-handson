@@ -33,15 +33,18 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-/** タイトル検索を含むIssue一覧を取得します。
- * タイトル検索用にqueryで検索もできる
+/**
+ * Issue一覧を取得します。
+ * titleSearchQueryが空でなければ、タイトル検索用のquery parameterを付けます。
  */
-export function fetchIssues(query: string): Promise<Issue[]> {
+export function fetchIssues(titleSearchQuery: string): Promise<Issue[]> {
   const searchParams = new URLSearchParams();
-  if (query.trim()) searchParams.set("query", query.trim());
+  if (titleSearchQuery.trim()) {
+    searchParams.set("query", titleSearchQuery.trim());
+  }
 
   const queryString = searchParams.size > 0 ? `?${searchParams}` : "";
-  // ?query=a
+  // 例: /issues?query=フォーム
   return request<Issue[]>(`/issues${queryString}`);
 }
 

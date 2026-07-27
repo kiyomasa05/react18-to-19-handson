@@ -67,14 +67,15 @@ const wait = (milliseconds: number) =>
 /** サーバーが起動しているか確認するヘルスチェックです。 */
 app.get('/health', (c) => c.json({ status: 'ok' }))
 
-/** Issue一覧を返します。queryがある場合はタイトルで絞り込みます。 */
+/** Issue一覧を返します。query parameterがある場合はタイトルで絞り込みます。 */
 app.get('/api/issues', async (c) => {
   await wait(700)
 
-  const query = c.req.query('query')?.trim().toLocaleLowerCase('ja') ?? ''
-  const result = query
+  const titleSearchQuery =
+    c.req.query('query')?.trim().toLocaleLowerCase('ja') ?? ''
+  const result = titleSearchQuery
     ? issues.filter((issue) =>
-        issue.title.toLocaleLowerCase('ja').includes(query),
+        issue.title.toLocaleLowerCase('ja').includes(titleSearchQuery),
       )
     : issues
 
