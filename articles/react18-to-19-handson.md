@@ -86,7 +86,7 @@ APIへ人工的な遅延を入れているため、非同期処理中の画面�
 今回のプロジェクトは、フロントエンドとAPIをnpm workspacesでまとめています。
 
 - リポジトリ: https://github.com/kiyomasa05/react18-to-19-handson
-- 今回の完成コード: `article-01-react18タグのURL`
+- 今回の完成コード: [`article-01-react18タグのURL`](https://github.com/kiyomasa05/react18-to-19-handson/tree/article-01-react18)
 
 ```text
 react18-to-19-handson/
@@ -379,6 +379,8 @@ React 19のActionsは、このうちどこをまとめ、どこを引き続き�
 
 次はReact 18.3.1で非推奨APIの警告を確認してからReact 19.2へ更新し、まず`use`とSuspenseの境界を検証します。
 
+- リポジトリ: https://github.com/kiyomasa05/react18-to-19-handson
+- 今回の完成コード: [`article-01-react18タグのURL`](https://github.com/kiyomasa05/react18-to-19-handson/tree/article-01-react18)
 ## 参考資料
 
 - [React v19](https://react.dev/blog/2024/12/05/react-19)
