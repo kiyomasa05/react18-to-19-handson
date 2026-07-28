@@ -20,12 +20,11 @@ React 18で作ったIssue管理アプリを19.2へ段階的に移行し、各追
 | 回    | 主な内容                                                                             |
 | ----- | ------------------------------------------------------------------------------------ |
 | 第1回 | React 18.3.1で比較用のIssue管理アプリを作る                                          |
-| 第2回 | React 19.2へ更新し、移行時の警告や変更点を確認する                                   |
-| 第3回 | `use`、`<Suspense>`、Error Boundaryで一覧取得を書き換える                            |
-| 第4回 | Action、`<form action>`、`useActionState`、`useFormStatus`でフォーム送信を書き換える |
-| 第5回 | `useOptimistic`と`useTransition`で投票処理と非同期更新を改善する                     |
-| 第6回 | `useEffectEvent`と`<Activity>`の使いどころを検証する                                 |
-| 第7回 | `ref`の扱い、Context、メタデータやリソース読み込みなど、Hooks以外の変更点を整理する  |
+| 第2回 | React 19.2へ更新し、`use`、`<Suspense>`、Error Boundaryで一覧取得を書き換える         |
+| 第3回 | Action、`<form action>`、`useActionState`、`useFormStatus`でフォーム送信を書き換える |
+| 第4回 | `useOptimistic`と`useTransition`で投票処理と非同期更新を改善する                     |
+| 第5回 | `useEffectEvent`と`<Activity>`の使いどころを検証する                                 |
+| 第6回 | `ref`の扱い、Context、メタデータやリソース読み込みなど、Hooks以外の変更点を整理する  |
 
 検証結果や1記事あたりの分量によって、回の分割や順番は変更する可能性があります。
 
