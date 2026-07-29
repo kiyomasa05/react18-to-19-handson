@@ -1,17 +1,17 @@
 /** Issue一覧のloading・error・空表示・正常表示を切り替えるファイルです。 */
-import type { Issue, IssueStatus } from '../types/issue'
-import { IssueCard } from './IssueCard'
+import type { Issue, IssueStatus } from "../types/issue";
+import { IssueCard } from "./IssueCard";
 
 type IssueListProps = {
-  issues: Issue[]
-  isLoading: boolean
-  error: string | null
-  votingId: number | null
-  updatingStatusId: number | null
-  onRetry: () => void
-  onVote: (id: number) => void
-  onStatusChange: (id: number, status: IssueStatus) => void
-}
+  issues: Issue[];
+  isLoading: boolean;
+  error: string | null;
+  votingId: number | null;
+  updatingStatusId: number | null;
+  onRetry: () => void;
+  onVote: (id: number) => void;
+  onStatusChange: (id: number, status: IssueStatus) => void;
+};
 
 /**
  * Issue一覧の現在状態に応じたUIを返します。
@@ -39,7 +39,7 @@ export function IssueList({
           </div>
         ))}
       </div>
-    )
+    );
   }
 
   // 取得失敗時はエラー内容と再読み込み操作を表示します。
@@ -52,7 +52,7 @@ export function IssueList({
           再読み込み
         </button>
       </div>
-    )
+    );
   }
 
   // 検索結果が0件の場合は、正常な空状態として案内を表示します。
@@ -62,7 +62,7 @@ export function IssueList({
         <strong>該当するIssueはありません</strong>
         <p>検索語を変えるか、新しいIssueを追加してください。</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -78,5 +78,23 @@ export function IssueList({
         />
       ))}
     </div>
-  )
+  );
+}
+
+/**
+ * Issue一覧のPromiseがpending中に、
+ * Suspenseのfallbackとして表示するスケルトンです。
+ */
+export function IssueListSkeleton() {
+  return (
+    <div className="issue-grid" aria-label="Issueを読み込み中">
+      {[0, 1, 2].map((item) => (
+        <div className="issue-card skeleton-card" key={item}>
+          <span className="skeleton skeleton-short" />
+          <span className="skeleton skeleton-title" />
+          <span className="skeleton skeleton-line" />
+        </div>
+      ))}
+    </div>
+  );
 }
