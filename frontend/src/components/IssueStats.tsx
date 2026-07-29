@@ -55,3 +55,25 @@ export function IssueStatsFallback() {
     </dl>
   )
 }
+/**
+ * Issue一覧のPromiseがrejectedになったとき、
+ * 集計カードの代わりに表示するエラーUIです。
+ *
+ * 一覧側で詳しいエラーを表示するため、
+ * こちらには再試行ボタンを置きません。
+ */
+export function IssueStatsErrorFallback() {
+  return (
+    <dl
+      className="stats-card"
+      aria-label="Issueの集計を取得できませんでした"
+    >
+      {["表示中", "完了", "総投票"].map((label) => (
+        <div key={label}>
+          <dt>{label}</dt>
+          <dd aria-hidden="true">—</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}

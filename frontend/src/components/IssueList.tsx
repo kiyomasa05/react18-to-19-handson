@@ -64,3 +64,32 @@ export function IssueListSkeleton() {
     </div>
   );
 }
+type IssueListErrorFallbackProps = {
+  /** APIから受け取ったエラーです。 */
+  error: Error;
+
+  /** 再試行ボタンを押したときに呼ぶ処理です。 */
+  onRetry: () => void;
+};
+
+/**
+ * Issue一覧のPromiseがrejectedになったとき、
+ * カード一覧の代わりに表示するエラーUIです。
+ */
+export function IssueListErrorFallback({
+  error,
+  onRetry,
+}: IssueListErrorFallbackProps) {
+  return (
+    <div className="state-card" role="alert">
+      <strong>Issue一覧を取得できませんでした</strong>
+
+      {/* request()が生成したAPIのエラーメッセージを表示する */}
+      <p>{error.message}</p>
+
+      <button type="button" onClick={onRetry}>
+        再試行
+      </button>
+    </div>
+  );
+}
