@@ -35,11 +35,6 @@ export function IssueBoard({
       updatingStatusId={updatingStatusId}
       onVote={onVote}
       onStatusChange={onStatusChange}
-      // 以下の3つは移行途中だけ必要な値です。
-      // 後でloadingをSuspenseへ移したら削除します。
-      isLoading={false}
-      error={null}
-      onRetry={() => {}}
     />
   );
 }
