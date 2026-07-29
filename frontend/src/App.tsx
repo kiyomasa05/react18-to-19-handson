@@ -7,9 +7,17 @@ import { createIssue, updateIssueStatus, voteForIssue } from "./api/issues";
 import { getIssuesPromise, refetchIssues } from "./api/issuesResource";
 import { IssueBoard } from "./components/IssueBoard";
 import { IssueForm } from "./components/IssueForm";
-import { IssueListSkeleton } from "./components/IssueList";
-import { IssueStats, IssueStatsFallback } from "./components/IssueStats";
+import {
+  IssueListErrorFallback,
+  IssueListSkeleton,
+} from "./components/IssueList";
+import {
+  IssueStats,
+  IssueStatsFallback,
+  IssueStatsErrorFallback,
+} from "./components/IssueStats";
 import type { IssueStatus } from "./types/issue";
+import { IssueErrorBoundary } from "./components/IssueErrorBoundary";
 
 export default function App() {
   // issues のstateはPromiseとして管理することになった
@@ -51,6 +59,14 @@ export default function App() {
     setTitleSearchQuery(nextTitleSearchQuery);
 
     setIssuesPromise(getIssuesPromise(nextTitleSearchQuery));
+  }
+
+  /**
+   * 一覧取得エラー後にキャッシュを破棄し、
+   * 現在の検索条件で新しいGETを開始します。
+   */
+  function handleRetryIssues() {
+    setIssuesPromise(refetchIssues(latestTitleSearchQueryRef.current));
   }
 
   /** フォームを送信し、作成されたIssueを一覧の先頭へ追加します。 */
@@ -170,9 +186,14 @@ export default function App() {
           </div>
 
           {/* 集計値のPromiseがpending中は「—」を表示する */}
-          <Suspense fallback={<IssueStatsFallback />}>
-            <IssueStats issuesPromise={issuesPromise} />
-          </Suspense>
+          <IssueErrorBoundary
+            resetKey={issuesPromise}
+            fallback={() => <IssueStatsErrorFallback />}
+          >
+            <Suspense fallback={<IssueStatsFallback />}>
+              <IssueStats issuesPromise={issuesPromise} />
+            </Suspense>
+          </IssueErrorBoundary>
         </section>
 
         <IssueForm
@@ -226,15 +247,25 @@ export default function App() {
           )}
 
           {/* 一覧のPromiseがpending中はスケルトンを表示する */}
-          <Suspense fallback={<IssueListSkeleton />}>
-            <IssueBoard
-              issuesPromise={issuesPromise}
-              votingId={votingId}
-              updatingStatusId={updatingStatusId}
-              onVote={handleVote}
-              onStatusChange={handleStatusChange}
-            />
-          </Suspense>
+          <IssueErrorBoundary
+            resetKey={issuesPromise}
+            fallback={(error) => (
+              <IssueListErrorFallback
+                error={error}
+                onRetry={handleRetryIssues}
+              />
+            )}
+          >
+            <Suspense fallback={<IssueListSkeleton />}>
+              <IssueBoard
+                issuesPromise={issuesPromise}
+                votingId={votingId}
+                updatingStatusId={updatingStatusId}
+                onVote={handleVote}
+                onStatusChange={handleStatusChange}
+              />
+            </Suspense>
+          </IssueErrorBoundary>
         </section>
       </main>
 

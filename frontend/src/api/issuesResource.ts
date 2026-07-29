@@ -44,6 +44,25 @@ export function getIssuesPromise(titleSearchQuery: string): Promise<Issue[]> {
     issuesPromise,
   );
 
+  // Promiseがrejectした場合は、その検索条件のキャッシュを削除する
+  void issuesPromise.catch(() => {
+    const currentIssuesPromise = issuesPromiseByTitleSearchQuery.get(
+      normalizedTitleSearchQuery,
+    );
+
+    /**
+     * Mapに残っているPromiseが、今回失敗したPromiseと同じ場合だけ削除する。
+     *
+     * 古い通信の失敗によって、後から作られた新しいPromiseを
+     * 誤って削除しないために同一性を確認します。
+     */
+    if (currentIssuesPromise === issuesPromise) {
+      issuesPromiseByTitleSearchQuery.delete(normalizedTitleSearchQuery);
+    }
+  });
+
+  return issuesPromise;
+
   return issuesPromise;
 }
 
