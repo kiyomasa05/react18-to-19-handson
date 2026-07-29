@@ -11,44 +11,40 @@ import { fetchIssues } from "./issues";
  * タイトル検索文字列と、Issue一覧取得Promiseの対応表です。
  * 検索条件が増えると、Mapの中の要素が増えます。
  */
-const issuesPromiseByTitleSearchQuery = new Map<string, Promise<Issue[]>>();
+const searchStringToPromiseMap = new Map<string, Promise<Issue[]>>();
 
 /**
  * Map前後の空白を除去し、同じ検索文字列として扱えるようにします。
  */
-function normalizeTitleSearchQuery(titleSearchQuery: string) {
-  return titleSearchQuery.trim();
+function trimSearchQuery(searchQuery: string) {
+  return searchQuery.trim();
 }
 /**
  * 同じ検索条件のPromiseがあれば再利用し、
  * なければAPI通信を開始してPromiseを保存します。
  */
 export function getIssuesPromise(titleSearchQuery: string): Promise<Issue[]> {
-  const normalizedTitleSearchQuery =
-    normalizeTitleSearchQuery(titleSearchQuery);
+  const trimedSearchQuery =
+    trimSearchQuery(titleSearchQuery);
 
-  const cachedIssuesPromise = issuesPromiseByTitleSearchQuery.get(
-    normalizedTitleSearchQuery,
+  const cachedIssuesPromise = searchStringToPromiseMap.get(
+    trimedSearchQuery
   );
 
-  // すでに同じ検索条件のPromiseがあれば再利用する
+  // すでに同じ検索条件のPromiseがあれば再利する
   if (cachedIssuesPromise) {
     return cachedIssuesPromise;
   }
   // 初めて使う検索条件だけGET通信を開始する
-  const issuesPromise = fetchIssues(normalizedTitleSearchQuery);
+  const issuesPromise = fetchIssues(trimedSearchQuery);
 
   // 通信完了を待たず、pending中のPromiseをすぐ保存する
-  issuesPromiseByTitleSearchQuery.set(
-    normalizedTitleSearchQuery,
-    issuesPromise,
-  );
+  searchStringToPromiseMap.set(trimedSearchQuery, issuesPromise);
 
   // Promiseがrejectした場合は、その検索条件のキャッシュを削除する
   void issuesPromise.catch(() => {
-    const currentIssuesPromise = issuesPromiseByTitleSearchQuery.get(
-      normalizedTitleSearchQuery,
-    );
+    const currentIssuesPromise =
+      searchStringToPromiseMap.get(trimedSearchQuery);
 
     /**
      * Mapに残っているPromiseが、今回失敗したPromiseと同じ場合だけ削除する。
@@ -57,11 +53,9 @@ export function getIssuesPromise(titleSearchQuery: string): Promise<Issue[]> {
      * 誤って削除しないために同一性を確認します。
      */
     if (currentIssuesPromise === issuesPromise) {
-      issuesPromiseByTitleSearchQuery.delete(normalizedTitleSearchQuery);
+      searchStringToPromiseMap.delete(trimedSearchQuery);
     }
   });
-
-  return issuesPromise;
 
   return issuesPromise;
 }
@@ -74,10 +68,10 @@ export function getIssuesPromise(titleSearchQuery: string): Promise<Issue[]> {
  * この関数は後のMutation検証で使用します。
  */
 export function refetchIssues(
-  titleSearchQuery: string,
+  searchQuery: string,
 ): Promise<Issue[]> {
   // Map自体は残し、中に保存した要素だけを削除する
-  issuesPromiseByTitleSearchQuery.clear()
+  searchStringToPromiseMap.clear();
 
-  return getIssuesPromise(titleSearchQuery)
+  return getIssuesPromise(searchQuery)
 }
