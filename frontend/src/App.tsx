@@ -2,17 +2,17 @@
  * React 18版の画面全体を組み立てるルートコンポーネント。
  * Issue一覧・検索・追加・投票・ステータス更新のstateをまとめて管理します。
  */
-import { Suspense, useState } from "react";
+import { Suspense, useState, useRef } from "react";
 import { createIssue, updateIssueStatus, voteForIssue } from "./api/issues";
-import { getIssuesPromise } from "./api/issuesResource";
+import { getIssuesPromise, refetchIssues } from "./api/issuesResource";
 import { IssueBoard } from "./components/IssueBoard";
 import { IssueForm } from "./components/IssueForm";
 import { IssueListSkeleton } from "./components/IssueList";
 import { IssueStats, IssueStatsFallback } from "./components/IssueStats";
-import type { Issue, IssueStatus } from "./types/issue";
+import type { IssueStatus } from "./types/issue";
 
 export default function App() {
-  const [, setIssues] = useState<Issue[]>([]);
+  // issues のstateはPromiseとして管理することになった
 
   // 検索欄へ表示する文字列
   const [titleSearchQuery, setTitleSearchQuery] = useState("");
@@ -21,6 +21,12 @@ export default function App() {
   const [issuesPromise, setIssuesPromise] = useState(() =>
     getIssuesPromise(""),
   );
+
+  /**
+   * Mutationの通信中に検索文字列が変わっても、
+   * 通信完了時点の最新条件を参照するためのrefです。
+   */
+  const latestTitleSearchQueryRef = useRef(titleSearchQuery);
 
   // Issue追加フォームの入力値・送信中・エラーを管理します。
   const [draftTitle, setDraftTitle] = useState("");
@@ -40,6 +46,8 @@ export default function App() {
    * 同じイベント内で切り替えます。
    */
   function handleTitleSearchQueryChange(nextTitleSearchQuery: string) {
+    // stateの反映を待たず、最新値をすぐrefへ保存する
+    latestTitleSearchQueryRef.current = nextTitleSearchQuery;
     setTitleSearchQuery(nextTitleSearchQuery);
 
     setIssuesPromise(getIssuesPromise(nextTitleSearchQuery));
@@ -58,12 +66,19 @@ export default function App() {
     setSubmitError(null);
 
     try {
-      const createdIssue = await createIssue(title);
-
-      // 送信成功: APIが返したIssueを追加し、入力欄と検索条件をリセットします。
-      setIssues((currentIssues) => [createdIssue, ...currentIssues]);
-      setDraftTitle("");
+      // いままではissueをawait createIssueでやって、stateに入れる形で返り値を処理していた
+      // 今回はsetIssuePromiseで再度一覧をキャッシュ付きで返すため、返り値に使っていない
       if (titleSearchQuery) setTitleSearchQuery("");
+      // POSTが完了するまで待つ
+      await createIssue(title);
+
+      // 作成成功後、入力欄と検索条件を空に戻す
+      setDraftTitle("");
+      latestTitleSearchQueryRef.current = "";
+      setTitleSearchQuery("");
+
+      // 全キャッシュを破棄し、全IssueをGETし直す
+      setIssuesPromise(refetchIssues(""));
     } catch (error) {
       // 送信失敗: 画面へ表示するエラーメッセージをstateへ保存します。
       setSubmitError(
@@ -83,12 +98,11 @@ export default function App() {
     setVoteError(null);
 
     try {
-      const updatedIssue = await voteForIssue(id, failNextVote);
-      setIssues((currentIssues) =>
-        currentIssues.map((issue) =>
-          issue.id === updatedIssue.id ? updatedIssue : issue,
-        ),
-      );
+      // 投票APIが完了するまで待つ
+      await voteForIssue(id, failNextVote);
+
+      // 完了時点の検索文字列で最新一覧を取得する
+      setIssuesPromise(refetchIssues(latestTitleSearchQueryRef.current));
     } catch (error) {
       setVoteError(
         error instanceof Error ? error.message : "投票に失敗しました",
@@ -106,12 +120,11 @@ export default function App() {
     setUpdatingStatusId(id);
 
     try {
-      const updatedIssue = await updateIssueStatus(id, status);
-      setIssues((currentIssues) =>
-        currentIssues.map((issue) =>
-          issue.id === updatedIssue.id ? updatedIssue : issue,
-        ),
-      );
+      // ステータス更新APIが完了するまで待つ
+      await updateIssueStatus(id, status);
+
+      // 完了時点の検索文字列で最新一覧を取得する
+      setIssuesPromise(refetchIssues(latestTitleSearchQueryRef.current));
     } catch (error) {
       setVoteError(
         error instanceof Error
