@@ -1,7 +1,8 @@
 node_modules/
 dist/
+backups/
 .DS_Store
 .env
 .env.local
 *.log
-articles/
+articles/*
