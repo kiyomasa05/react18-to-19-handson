@@ -1,9 +1,6 @@
-/**
- * React 18版の画面全体を組み立てるルートコンポーネント。
- * Issue一覧・検索・追加・投票・ステータス更新のstateをまとめて管理します。
- */
+/** Issue一覧・検索・投票・ステータス更新を組み立てるルートコンポーネント。 */
 import { Suspense, useState, useRef } from "react";
-import { createIssue, updateIssueStatus, voteForIssue } from "./api/issues";
+import { updateIssueStatus, voteForIssue } from "./api/issues";
 import { getIssuesPromise, refetchIssues } from "./api/issuesResource";
 import { IssueBoard } from "./components/IssueBoard";
 import { IssueForm } from "./components/IssueForm";
@@ -36,11 +33,6 @@ export default function App() {
    */
   const latestTitleSearchQueryRef = useRef(titleSearchQuery);
 
-  // Issue追加フォームの入力値・送信中・エラーを管理します。
-  const [draftTitle, setDraftTitle] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
   // 投票中のIssueと、失敗パターンを再現する設定を管理します。
   const [votingId, setVotingId] = useState<number | null>(null);
   const [voteError, setVoteError] = useState<string | null>(null);
@@ -69,41 +61,11 @@ export default function App() {
     setIssuesPromise(refetchIssues(latestTitleSearchQueryRef.current));
   }
 
-  /** フォームを送信し、作成されたIssueを一覧の先頭へ追加します。 */
-  async function handleCreateIssue(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const title = draftTitle.trim();
-
-    // 空のタイトルと、送信中の二重送信はここで止めます。
-    if (!title || isSubmitting) return;
-
-    // 送信開始前: pending状態に切り替え、前回のエラーを消します。
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      // いままではissueをawait createIssueでやって、stateに入れる形で返り値を処理していた
-      // 今回はsetIssuePromiseで再度一覧をキャッシュ付きで返すため、返り値に使っていない
-      if (titleSearchQuery) setTitleSearchQuery("");
-      // POSTが完了するまで待つ
-      await createIssue(title);
-
-      // 作成成功後、入力欄と検索条件を空に戻す
-      setDraftTitle("");
-      latestTitleSearchQueryRef.current = "";
-      setTitleSearchQuery("");
-
-      // 全キャッシュを破棄し、全IssueをGETし直す
-      setIssuesPromise(refetchIssues(""));
-    } catch (error) {
-      // 送信失敗: 画面へ表示するエラーメッセージをstateへ保存します。
-      setSubmitError(
-        error instanceof Error ? error.message : "Issueの追加に失敗しました",
-      );
-    } finally {
-      // 送信終了: 成功・失敗のどちらでもpending状態を解除します。
-      setIsSubmitting(false);
-    }
+  /** Issue作成成功後、検索条件とPromiseキャッシュをリセットします。 */
+  function handleIssueCreated() {
+    latestTitleSearchQueryRef.current = "";
+    setTitleSearchQuery("");
+    setIssuesPromise(refetchIssues(""));
   }
 
   /** 指定したIssueへ投票し、APIから返された正式な票数へ置き換えます。 */
@@ -196,13 +158,7 @@ export default function App() {
           </IssueErrorBoundary>
         </section>
 
-        <IssueForm
-          title={draftTitle}
-          isSubmitting={isSubmitting}
-          error={submitError}
-          onTitleChange={setDraftTitle}
-          onSubmit={handleCreateIssue}
-        />
+        <IssueForm onCreated={handleIssueCreated} />
 
         <section className="board-section" aria-labelledby="issue-board-title">
           <div className="board-toolbar">
