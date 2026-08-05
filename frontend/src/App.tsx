@@ -1,5 +1,10 @@
 /** Issue一覧・検索・投票・ステータス更新を組み立てるルートコンポーネント。 */
-import { Suspense, useState, useRef } from "react";
+import {
+  Suspense,
+  useState,
+  useRef,
+  startTransition,
+} from "react";
 import { updateIssueStatus, voteForIssue } from "./api/issues";
 import { getIssuesPromise, refetchIssues } from "./api/issuesResource";
 import { IssueBoard } from "./components/IssueBoard";
@@ -34,7 +39,6 @@ export default function App() {
   const latestTitleSearchQueryRef = useRef(titleSearchQuery);
 
   // 投票中のIssueと、失敗パターンを再現する設定を管理します。
-  const [votingId, setVotingId] = useState<number | null>(null);
   const [voteError, setVoteError] = useState<string | null>(null);
   const [failNextVote, setFailNextVote] = useState(false);
 
@@ -70,25 +74,38 @@ export default function App() {
 
   /** 指定したIssueへ投票し、APIから返された正式な票数へ置き換えます。 */
   async function handleVote(id: number) {
-    if (votingId !== null) return;
-
-    setVotingId(id);
     setVoteError(null);
+
+    // Action実行中にチェック状態が変わっても影響を受けないように保存する
+    const shouldFail = failNextVote;
 
     try {
       // 投票APIが完了するまで待つ
-      await voteForIssue(id, failNextVote);
-
-      // 完了時点の検索文字列で最新一覧を取得する
-      setIssuesPromise(refetchIssues(latestTitleSearchQueryRef.current));
+      await voteForIssue(id, shouldFail);
     } catch (error) {
       setVoteError(
         error instanceof Error ? error.message : "投票に失敗しました",
       );
+      return;
     } finally {
-      setVotingId(null);
       setFailNextVote(false);
     }
+    // 投票成功後、正式な票数を取得する
+    const nextIssuesPromise = refetchIssues(latestTitleSearchQueryRef.current);
+
+    /**
+     * await後のstate更新は、自動的にはTransitionにならない。
+     * Promiseの切り替えを改めてstartTransitionで囲む。
+     */
+    startTransition(() => {
+      setIssuesPromise(nextIssuesPromise);
+    });
+
+    /**
+     * 再取得が終わるまで、IssueBoard側のActionを完了させない。
+     * これにより楽観的な票数を正式値が届くまで維持する。
+     */
+    await nextIssuesPromise;
   }
 
   /** 指定したIssueのステータスを更新し、一覧内の該当データを置き換えます。 */
@@ -215,7 +232,6 @@ export default function App() {
             <Suspense fallback={<IssueListSkeleton />}>
               <IssueBoard
                 issuesPromise={issuesPromise}
-                votingId={votingId}
                 updatingStatusId={updatingStatusId}
                 onVote={handleVote}
                 onStatusChange={handleStatusChange}

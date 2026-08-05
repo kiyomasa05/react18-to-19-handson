@@ -1,20 +1,21 @@
 /** 1件のIssueカードを表示するための型とUIを定義します。 */
-import type { Issue, IssueStatus } from '../types/issue'
+import type { Issue, IssueStatus } from "../types/issue";
 
 // APIで使うステータス値を、日本語の表示名へ変換します。
 const statusLabels: Record<IssueStatus, string> = {
-  todo: '未着手',
-  'in-progress': '進行中',
-  done: '完了',
-}
+  todo: "未着手",
+  "in-progress": "進行中",
+  done: "完了",
+};
 
 type IssueCardProps = {
-  issue: Issue
-  isVoting: boolean
-  isUpdatingStatus: boolean
-  onVote: (id: number) => void
-  onStatusChange: (id: number, status: IssueStatus) => void
-}
+  issue: Issue;
+  isVoting: boolean;
+  isVoteDisabled: boolean;
+  isUpdatingStatus: boolean;
+  onVote: (id: number) => void;
+  onStatusChange: (id: number, status: IssueStatus) => void;
+};
 
 /**
  * Issue 1件のタイトル・ステータス・票数を表示します。
@@ -23,15 +24,16 @@ type IssueCardProps = {
 export function IssueCard({
   issue,
   isVoting,
+  isVoteDisabled,
   isUpdatingStatus,
   onVote,
   onStatusChange,
 }: IssueCardProps) {
   // ISO形式の作成日時を、カード用の短い日本語表記へ変換します。
-  const date = new Intl.DateTimeFormat('ja-JP', {
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(issue.createdAt))
+  const date = new Intl.DateTimeFormat("ja-JP", {
+    month: "short",
+    day: "numeric",
+  }).format(new Date(issue.createdAt));
 
   return (
     <article className="issue-card">
@@ -67,12 +69,12 @@ export function IssueCard({
         className="vote-button"
         type="button"
         onClick={() => onVote(issue.id)}
-        disabled={isVoting}
+        disabled={isVoteDisabled}
         aria-label={`${issue.title}に投票。現在${issue.votes}票`}
       >
         <span aria-hidden="true">▲</span>
-        {isVoting ? '送信中…' : `${issue.votes} votes`}
+        {isVoting ? `${issue.votes} votes · 反映中…` : `${issue.votes} votes`}
       </button>
     </article>
-  )
+  );
 }

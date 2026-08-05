@@ -6,6 +6,7 @@ type IssueListProps = {
   issues: Issue[];
   votingId: number | null;
   updatingStatusId: number | null;
+  isVotePending: boolean;
   onVote: (id: number) => void;
   onStatusChange: (id: number, status: IssueStatus) => void;
 };
@@ -17,6 +18,7 @@ type IssueListProps = {
 export function IssueList({
   issues,
   votingId,
+  isVotePending,
   updatingStatusId,
   onVote,
   onStatusChange,
@@ -37,7 +39,8 @@ export function IssueList({
         <IssueCard
           key={issue.id}
           issue={issue}
-          isVoting={votingId === issue.id}
+          isVoting={isVotePending && votingId === issue.id}
+          isVoteDisabled={isVotePending}
           isUpdatingStatus={updatingStatusId === issue.id}
           onVote={onVote}
           onStatusChange={onStatusChange}
