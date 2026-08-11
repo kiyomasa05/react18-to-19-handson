@@ -1,10 +1,5 @@
 /** Issue一覧・検索・投票・ステータス更新を組み立てるルートコンポーネント。 */
-import {
-  Suspense,
-  useState,
-  useRef,
-  startTransition,
-} from "react";
+import { Suspense, useState, useRef, startTransition, useEffect } from "react";
 import { updateIssueStatus, voteForIssue } from "./api/issues";
 import { getIssuesPromise, refetchIssues } from "./api/issuesResource";
 import { IssueBoard } from "./components/IssueBoard";
@@ -56,6 +51,34 @@ export default function App() {
 
     setIssuesPromise(getIssuesPromise(nextTitleSearchQuery));
   }
+
+  /**
+   * 自動更新を許可するかのフラグ
+   */
+  const [isAutoRefreshEnabled, setIsAutoRefreshEnabled] = useState(false);
+
+  useEffect(() => {
+    if (!isAutoRefreshEnabled) return;
+
+    console.log("[auto refresh] Effect開始", titleSearchQuery);
+
+    const intervalId = window.setInterval(() => {
+      console.log("[auto refresh] 実行", titleSearchQuery);
+
+      // Issue一覧の再取得
+      const nextIssuesPromise = refetchIssues(titleSearchQuery);
+
+      // 自動更新中も現在のIssue一覧を表示し続ける
+      startTransition(() => {
+        setIssuesPromise(nextIssuesPromise);
+      });
+    }, 5000); // ５秒ごと
+
+    return () => {
+      console.log("[auto refresh] cleanup", titleSearchQuery);
+      window.clearInterval(intervalId);
+    };
+  }, [isAutoRefreshEnabled, titleSearchQuery]);
 
   /**
    * 一覧取得エラー後にキャッシュを破棄し、
@@ -199,6 +222,16 @@ export default function App() {
           </div>
 
           <div className="experiment-bar">
+            <label>
+              <input
+                type="checkbox"
+                checked={isAutoRefreshEnabled}
+                onChange={(event) =>
+                  setIsAutoRefreshEnabled(event.target.checked)
+                }
+              />
+              5秒ごとに自動更新
+            </label>
             <label>
               <input
                 type="checkbox"
