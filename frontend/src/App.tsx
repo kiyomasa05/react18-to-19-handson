@@ -1,5 +1,12 @@
 /** Issue一覧・検索・投票・ステータス更新を組み立てるルートコンポーネント。 */
-import { Suspense, useState, useRef, startTransition, useEffect } from "react";
+import {
+  Suspense,
+  useState,
+  useRef,
+  startTransition,
+  useEffect,
+  useEffectEvent,
+} from "react";
 import { updateIssueStatus, voteForIssue } from "./api/issues";
 import { getIssuesPromise, refetchIssues } from "./api/issuesResource";
 import { IssueBoard } from "./components/IssueBoard";
@@ -57,28 +64,32 @@ export default function App() {
    */
   const [isAutoRefreshEnabled, setIsAutoRefreshEnabled] = useState(false);
 
+  const refreshCurrentIssues = useEffectEvent(() => {
+    console.log("[auto refresh] 実行", titleSearchQuery);
+
+    // Issue一覧の再取得
+    const nextIssuesPromise = refetchIssues(titleSearchQuery);
+
+    // 自動更新中も現在のIssue一覧を表示し続ける
+    startTransition(() => {
+      setIssuesPromise(nextIssuesPromise);
+    });
+  });
+
   useEffect(() => {
     if (!isAutoRefreshEnabled) return;
 
     console.log("[auto refresh] Effect開始", titleSearchQuery);
 
     const intervalId = window.setInterval(() => {
-      console.log("[auto refresh] 実行", titleSearchQuery);
-
-      // Issue一覧の再取得
-      const nextIssuesPromise = refetchIssues(titleSearchQuery);
-
-      // 自動更新中も現在のIssue一覧を表示し続ける
-      startTransition(() => {
-        setIssuesPromise(nextIssuesPromise);
-      });
+      refreshCurrentIssues();
     }, 5000); // ５秒ごと
 
     return () => {
       console.log("[auto refresh] cleanup", titleSearchQuery);
       window.clearInterval(intervalId);
     };
-  }, [isAutoRefreshEnabled, titleSearchQuery]);
+  }, [isAutoRefreshEnabled]); // refreshCurrentIssuesは依存配列にいれない
 
   /**
    * 一覧取得エラー後にキャッシュを破棄し、
