@@ -65,7 +65,7 @@ export default function App() {
   const [isAutoRefreshEnabled, setIsAutoRefreshEnabled] = useState(false);
 
   const refreshCurrentIssues = useEffectEvent(() => {
-    console.log("[auto refresh] 実行", titleSearchQuery);
+    console.log("[auto refresh] 実行");
 
     // Issue一覧の再取得
     const nextIssuesPromise = refetchIssues(titleSearchQuery);
@@ -79,14 +79,14 @@ export default function App() {
   useEffect(() => {
     if (!isAutoRefreshEnabled) return;
 
-    console.log("[auto refresh] Effect開始", titleSearchQuery);
+    console.log("[auto refresh] Effect開始");
 
     const intervalId = window.setInterval(() => {
       refreshCurrentIssues();
     }, 5000); // ５秒ごと
 
     return () => {
-      console.log("[auto refresh] cleanup", titleSearchQuery);
+      console.log("[auto refresh] cleanup");
       window.clearInterval(intervalId);
     };
   }, [isAutoRefreshEnabled]); // refreshCurrentIssuesは依存配列にいれない
