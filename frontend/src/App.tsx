@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { IssueWorkSpace } from "./components/issueWorkSpace";
 
 export default function App() {
+  const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(true);
   return (
     <div className="app-shell">
       <header className="site-header">
@@ -18,8 +20,15 @@ export default function App() {
           </span>
         </a>
         <span className="version-pill">BASELINE · REACT 18.3.1</span>
+        <button
+          type="button"
+          onClick={() => setIsWorkspaceVisible((isVisible) => !isVisible)}
+        >
+          {isWorkspaceVisible ? "Issue管理画面を隠す" : "Issue管理画面を表示"}
+        </button>
       </header>
-      <IssueWorkSpace />
+
+      {isWorkspaceVisible && <IssueWorkSpace />}
       <footer>
         <span>React Migration Lab</span>
         <span>Start state · useState + useEffect</span>

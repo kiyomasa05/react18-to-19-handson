@@ -162,18 +162,6 @@ export function IssueWorkSpace() {
   return (
     <main id="top">
       <section className="hero">
-        <div className="hero-copy">
-          <p className="eyebrow">ISSUE BOARD / BEFORE</p>
-          <h1>
-            非同期UIを、
-            <span>React 18で組み立てる。</span>
-          </h1>
-          <p className="hero-description">
-            loading、pending、errorを手動で管理した比較用アプリです。
-            ここからReact 19.2のActionsと新しいAPIへ移行します。
-          </p>
-        </div>
-
         {/* 集計値のPromiseがpending中は「—」を表示する */}
         <IssueErrorBoundary
           resetKey={issuesPromise}
