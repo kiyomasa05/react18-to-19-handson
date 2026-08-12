@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Activity, useState } from "react";
 import { IssueWorkSpace } from "./components/issueWorkSpace";
 
 export default function App() {
@@ -28,7 +28,9 @@ export default function App() {
         </button>
       </header>
 
-      {isWorkspaceVisible && <IssueWorkSpace />}
+      <Activity mode={isWorkspaceVisible ? "visible" : "hidden"}>
+        <IssueWorkSpace />
+      </Activity>
       <footer>
         <span>React Migration Lab</span>
         <span>Start state · useState + useEffect</span>
