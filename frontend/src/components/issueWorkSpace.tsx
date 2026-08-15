@@ -18,6 +18,7 @@ import {
 import { IssueForm } from "./IssueForm";
 import { IssueListErrorFallback, IssueListSkeleton } from "./IssueList";
 import { IssueBoard } from "./IssueBoard";
+import { RefCleanupDemo } from "./RefCleanupDemo";
 
 export function IssueWorkSpace() {
   // 検索欄へ表示する文字列
@@ -178,6 +179,9 @@ export function IssueWorkSpace() {
           </Suspense>
         </IssueErrorBoundary>
       </section>
+
+      <RefCleanupDemo />
+      <br />
       <button type="button" onClick={handleFocusIssueTitle}>
         新しいIssueを書く
       </button>
