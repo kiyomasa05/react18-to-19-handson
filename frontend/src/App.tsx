@@ -1,8 +1,14 @@
 import { Activity, useState } from "react";
 import { IssueWorkSpace } from "./components/issueWorkSpace";
+import {
+  IssueDisplayContext,
+  VoteUnit,
+} from "./components/issueDisplayContext";
 
 export default function App() {
   const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(true);
+  const [voteUnit, setVoteUnit] = useState<VoteUnit>("votes");
+
   return (
     <div className="app-shell">
       <header className="site-header">
@@ -28,9 +34,23 @@ export default function App() {
         </button>
       </header>
 
-      <Activity mode={isWorkspaceVisible ? "visible" : "hidden"}>
-        <IssueWorkSpace />
-      </Activity>
+      <label>
+        票数の表記
+        <select
+          value={voteUnit}
+          onChange={(event) => setVoteUnit(event.target.value as VoteUnit)}
+        >
+          <option value="votes">votes</option>
+          <option value="票">票</option>
+        </select>
+      </label>
+      {/* <IssueDisplayContext.Provider value={voteUnit}> */}
+      <IssueDisplayContext value={voteUnit}>
+        <Activity mode={isWorkspaceVisible ? "visible" : "hidden"}>
+          <IssueWorkSpace />
+        </Activity>
+      </IssueDisplayContext>
+      {/* </IssueDisplayContext.Provider> */}
       <footer>
         <span>React Migration Lab</span>
         <span>Start state · useState + useEffect</span>

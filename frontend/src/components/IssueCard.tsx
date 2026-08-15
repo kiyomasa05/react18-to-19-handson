@@ -1,5 +1,7 @@
 /** 1件のIssueカードを表示するための型とUIを定義します。 */
+import { useContext } from "react";
 import type { Issue, IssueStatus } from "../types/issue";
+import { IssueDisplayContext } from "./issueDisplayContext";
 
 // APIで使うステータス値を、日本語の表示名へ変換します。
 const statusLabels: Record<IssueStatus, string> = {
@@ -29,6 +31,8 @@ export function IssueCard({
   onVote,
   onStatusChange,
 }: IssueCardProps) {
+  const voteUnit = useContext(IssueDisplayContext);
+
   // ISO形式の作成日時を、カード用の短い日本語表記へ変換します。
   const date = new Intl.DateTimeFormat("ja-JP", {
     month: "short",
@@ -70,10 +74,12 @@ export function IssueCard({
         type="button"
         onClick={() => onVote(issue.id)}
         disabled={isVoteDisabled}
-        aria-label={`${issue.title}に投票。現在${issue.votes}票`}
+        aria-label={`${issue.title}に投票。現在${issue.votes}${voteUnit}`}
       >
         <span aria-hidden="true">▲</span>
-        {isVoting ? `${issue.votes} votes · 反映中…` : `${issue.votes} votes`}
+        {isVoting
+          ? `${issue.votes} ${voteUnit}  · 反映中…`
+          : `${issue.votes} ${voteUnit} `}
       </button>
     </article>
   );
