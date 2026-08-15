@@ -4,6 +4,7 @@ import {
   IssueDisplayContext,
   VoteUnit,
 } from "./components/issueDisplayContext";
+import { DocumentMetadata } from "./components/DocumentMetadata";
 
 export default function App() {
   const [isWorkspaceVisible, setIsWorkspaceVisible] = useState(true);
@@ -11,6 +12,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <DocumentMetadata />
       <header className="site-header">
         <a
           className="brand"
