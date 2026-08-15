@@ -1,10 +1,13 @@
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { createIssue } from "../api/issues";
+import type { Ref } from "react";
 
 type IssueFormProps = {
   /** Issue作成成功後に、親で一覧を再取得する処理です。 */
   onCreated: () => void;
+  /** 親からタイトル入力欄を参照するためのrefです。 */
+  ref?: Ref<HTMLInputElement>;
 };
 
 type CreateIssueActionState = {
@@ -41,7 +44,7 @@ function IssueSubmitButton({ disabled }: { disabled: boolean }) {
  * Issueタイトルを入力して送信するフォーム。
  * Actionの戻り値とpendingをReact 19のフォームAPIへ接続します。
  */
-export function IssueForm({ onCreated }: IssueFormProps) {
+export function IssueForm({ onCreated, ref }: IssueFormProps) {
   // API失敗時に入力値を保持するため、タイトルはcontrolled inputにします。
   const [title, setTitle] = useState("");
 
@@ -92,6 +95,7 @@ export function IssueForm({ onCreated }: IssueFormProps) {
         <label htmlFor="issue-title">タイトル</label>
         <div className="form-row">
           <input
+            ref={ref}
             id="issue-title"
             name="title"
             value={title}

@@ -41,6 +41,12 @@ export function IssueWorkSpace() {
   // ステータス更新中のIssueを識別し、連続操作を防ぎます。
   const [updatingStatusId, setUpdatingStatusId] = useState<number | null>(null);
 
+  const issueTitleInputRef = useRef<HTMLInputElement>(null);
+
+  function handleFocusIssueTitle() {
+    issueTitleInputRef.current?.focus();
+  }
+
   /**
    * 検索文字列と、その検索条件に対応するPromiseを
    * 同じイベント内で切り替えます。
@@ -172,8 +178,11 @@ export function IssueWorkSpace() {
           </Suspense>
         </IssueErrorBoundary>
       </section>
+      <button type="button" onClick={handleFocusIssueTitle}>
+        新しいIssueを書く
+      </button>
 
-      <IssueForm onCreated={handleIssueCreated} />
+      <IssueForm ref={issueTitleInputRef} onCreated={handleIssueCreated} />
 
       <section className="board-section" aria-labelledby="issue-board-title">
         <div className="board-toolbar">
